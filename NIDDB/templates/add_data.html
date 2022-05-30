@@ -1,0 +1,50 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+{% if info %}
+<div class="alert alert-primary mt-5" role="alert">
+    {{info}}
+</div>
+{% endif %}
+<h3 class="mt-5 mb-5">Add New Record</h3>
+<form action="{% url 'add-data' %}" method="POST" class="w-50 m-auto">
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">NID Number</span>
+        <input type="number" class="form-control" name="nid" min="1000000000" max="99999999999999999" required>
+    </div>
+    {% csrf_token %}
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Status</span>
+        <select name="status" class="form-select" aria-label="Default select example">
+            <option value="Undecided" selected>Undecided</option>
+            <option value="Approved">Approved</option>
+            <option value="Canceled">Canceled</option>
+        </select>
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Added By</span>
+        {% if request.user.is_superuser %}
+        <select name="added_by" class="form-select">
+            {% for user in userlist %}
+                {% if user.is_superuser %}
+                    <option value="{{user}}" selected>{{user}}</option>
+                {% else %}
+                    <option value="{{user}}">{{user}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        {% else %}
+        <input type="text" class="form-control" name="added_by" value="{{request.user.username}}" readonly>
+        {% endif %}
+    </div>
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Date</span>
+        <input type="text" value='{% now "jS F Y H:i" %}' class="form-control" name="date" readonly>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    
+</form>
+
+{% endblock %}

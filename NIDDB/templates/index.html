@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<h3 class="mt-5">List of added NID</h3>
+<form action="{% url 'index' %}" method="POST">
+<div class="input-group mb-3 w-50">
+    <input type="text" name="query" class="form-control" placeholder="Search Data" aria-label="Recipient's username" aria-describedby="basic-addon2">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-dark">Search</button>
+  </div>
+</form>
+<div class="border border-dark">
+    <table class="table table-striped">
+        <thead>
+        <tr class="bg-secondary">
+            <th scope="col">#</th>
+            <th scope="col">NID</th>
+            <th scope="col">Status</th>
+            <th scope="col">Added By</th>
+            <th scope="col">Date</th>
+            {% if request.user.is_superuser %}
+            <th scope="col">Action</th>
+            {% endif %}
+        </tr>
+        </thead>
+        <tbody>
+            {% for data in records %}
+                <tr>
+                    <th scope="row">{{data.id}}</th>
+                    <td>{{data.nid}}</td>
+                    <td>{% if data.status == "" %} Undecided {% else %} {{data.status}} {% endif %}</td>
+                    <td>{{data.added_by}}</td>
+                    <td>{{data.date}}</td>
+                    {% if request.user.is_superuser %}
+                    <td><a href="{% url 'admin:NIDDB_applicant_data_change' data.id %}"><button type="button" class="btn btn-outline-primary">Edit</button></a>
+                        <a href="{% url 'admin:NIDDB_applicant_data_delete' data.id %}"><button type="button" class="btn btn-outline-primary">Delete</button></a></td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <div class="alert alert-primary" role="alert">
+                    No Record Found.
+                </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
